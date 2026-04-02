@@ -1,0 +1,22 @@
+[tasks.0_01_vim-cheat-sheet]
+description = "Vimコマンドチートシート"
+run = "~/scripts/vim-cheatsheet.sh"
+
+[tasks.0_11_ccusage]
+description = "Claude Code利用料"
+run = "npx ccusage@latest"
+
+[tasks.1_01_git_checkout_-b]
+description = "Create new git branch"
+run = "read -p 'Enter branch name: ' branch && git checkout -b \"$branch\""
+
+[settings]
+idiomatic_version_file_enable_tools = ["ruby"]
+trusted_config_paths = [
+    "~/ghq/"
+]
+
+[tools]
+node = "latest"
+ruby = "3.3.6"
+

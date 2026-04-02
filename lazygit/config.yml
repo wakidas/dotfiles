@@ -1,0 +1,7 @@
+customCommands:
+  - key: "C"
+    context: "files"
+    description: "Claude Code でコミットメッセージを生成"
+    command: "bash -c 'if [ -z \"$(git diff --staged)\" ]; then echo \"ステージされた変更がありません\"; exit 1; fi && git diff --staged | claude -p \"以下のdiffからコミットメッセージを生成してください。Conventional Commits形式で、本文は日本語で簡潔に。コミットメッセージのみを出力してください。コードブロックで囲わないでください。\" > /tmp/claude_commit_msg.txt && clear && git commit -e -F /tmp/claude_commit_msg.txt'"
+    loadingText: "Claude がコミットメッセージを生成中..."
+    output: terminal

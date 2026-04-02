@@ -1,0 +1,48 @@
+snippets:
+  - name: git status
+    keyword: gs
+    snippet: git status --short --branch
+
+  - name: git add
+    keyword: ga
+    snippet: git add
+
+  - name: git commit
+    keyword: gc
+    snippet: git commit
+
+  - name: git push
+    keyword: gp
+    snippet: git push
+
+  - name: git pull
+    keyword: gl
+    snippet: git pull
+
+  - name: git diff
+    keyword: gd
+    snippet: git diff
+
+  - name: git checkout
+    keyword: gco
+    snippet: git checkout
+
+  - name: git switch
+    keyword: gsw
+    snippet: git switch
+
+  - name: lazygit
+    keyword: lz
+    snippet: lazygit
+
+  - name: mise run
+    keyword: m
+    snippet: mise run
+
+  - name: nvim
+    keyword: nv
+    snippet: nvim
+
+  - name: ccusage
+    keyword: ccu
+    snippet: npx ccusage@latest 

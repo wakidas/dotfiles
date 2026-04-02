@@ -1,0 +1,11 @@
+.DS_Store
+.nvimlog
+.zshrc.local
+*.local.json
+.env
+.env.*
+
+# coding agents 
+**/.claude/
+**/.cursor/
+**/.codex/

@@ -1,0 +1,13 @@
+presets:
+  work:
+    name: Work
+    description: claude code + shell
+    backend: wezterm
+    layout:
+      type: horizontal
+      ratio: [1, 1]
+      panes:
+        - name: claude
+          command: claude
+          focus: true
+        - name: shell
