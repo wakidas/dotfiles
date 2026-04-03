@@ -1,0 +1,14 @@
+repos:
+  - repo: local
+    hooks:
+      - id: forbid-secret-files
+        name: Block local-only secret files
+        entry: scripts/forbid-secret-files.sh
+        language: script
+        files: '.*'
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
+        name: Detect hardcoded secrets
