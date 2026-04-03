@@ -85,7 +85,7 @@ bindkey '^m' zeno-auto-snippet-and-accept-line
 
 # ghq + fzf
 function ghq-fzf() {
-  local dir=$(ghq list -p | fzf --reverse --preview 'ls -la {}')
+  local dir=$(ghq list -p | fzf --reverse)
   if [ -n "$dir" ]; then
     cd "$dir"
   fi
