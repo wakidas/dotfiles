@@ -46,3 +46,7 @@ snippets:
   - name: ccusage
     keyword: ccu
     snippet: npx ccusage@latest 
+
+  - name: project root
+    keyword: proot
+    snippet: cd $(git rev-parse --show-toplevel)
