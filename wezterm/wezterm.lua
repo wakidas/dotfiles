@@ -86,7 +86,8 @@ wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_wid
 	if not tab_title or #tab_title == 0 then
 		tab_title = tab.active_pane.title
 	end
-	local title = "   " .. wezterm.truncate_right(tab_title, max_width - 1) .. "   "
+	local index = tab.tab_index + 1
+	local title = "   [" .. index .. "] " .. wezterm.truncate_right(tab_title, max_width - 1) .. "   "
 	return {
 		{ Background = { Color = edge_background } },
 		{ Foreground = { Color = edge_foreground } },
