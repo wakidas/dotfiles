@@ -19,6 +19,12 @@ joined_paths=$(IFS=:; echo "${paths[*]}")
 
 export PATH="$joined_paths:$PATH"
 
+# 履歴をタブ間・ペイン間で共有
+export HISTFILE=~/.zsh_history
+export HISTSIZE=10000
+export SAVEHIST=10000
+setopt share_history
+
 # 出力後1行空白追加
 add_newline() {
   if [[ -z $PS1_NEWLINE_LOGIN ]]; then
