@@ -2,11 +2,11 @@
 trap "tput cnorm 2>/dev/null" EXIT INT TERM
 
 spinner() {
-  local pid=$1 msg=$2 frames="⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏" i=0
+  local pid=$1 msg=$2 frames=("=" "*" "-") i=0
   tput civis 2>/dev/null
   while kill -0 "$pid" 2>/dev/null; do
-    printf "\r${frames:$((i % ${#frames})):1} $msg"
-    sleep 0.1
+    printf "\r${frames[$((i % ${#frames[@]}))]} $msg"
+    sleep 0.08
     ((i++))
   done
   tput cnorm 2>/dev/null
