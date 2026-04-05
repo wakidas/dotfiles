@@ -40,7 +40,22 @@ return {
     }
   end,
   keys = {
-    { "<leader>o", function() Snacks.picker.files() end, desc = "ファイル検索" },
+    {
+      "<leader>o",
+      function()
+        Snacks.picker.pick({
+          title = "Files",
+          multi = { "recent", "files" },
+          format = "file",
+          filter = { cwd = true },
+          transform = "unique_file",
+          matcher = {
+            sort_empty = false,
+          },
+        })
+      end,
+      desc = "最近のファイル",
+    },
     { "<leader>f", function() Snacks.picker.grep() end, desc = "文字列検索" },
     { "<leader>h", function() Snacks.picker.help() end, desc = "ヘルプ" },
   },

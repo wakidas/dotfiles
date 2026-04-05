@@ -59,6 +59,8 @@ vim.keymap.set("i", "<C-e>", "<End>")
 vim.keymap.set("i", "<C-f>", "<Right>")
 vim.keymap.set("i", "<C-b>", "<Left>")
 vim.keymap.set("i", "<C-k>", '<C-o>"_C')
+vim.keymap.set("i", "<Down>", "<C-o>gj")
+vim.keymap.set("i", "<Up>", "<C-o>gk")
 
 -- コマンドラインのEmacs風キーバインド
 vim.keymap.set("c", "<C-p>", "<Up>")
