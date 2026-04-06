@@ -1,6 +1,6 @@
 customCommands:
   - key: "C"
     context: "files"
-    description: "Claude Code でコミットメッセージを生成"
-    command: "bash ~/Library/Application\\ Support/lazygit/claude-commit.sh"
+    description: "Codex でコミットメッセージを生成"
+    command: 'bash "$(dirname "$(realpath "$HOME/Library/Application Support/lazygit/config.yml")")/agent-commit.sh"'
     output: terminal
