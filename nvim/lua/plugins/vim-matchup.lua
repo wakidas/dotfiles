@@ -1,5 +1,6 @@
 return {
 	"andymass/vim-matchup",
+	enabled = false,
 	event = "BufReadPost",
 	dependencies = { "nvim-treesitter/nvim-treesitter" },
 	config = function()
