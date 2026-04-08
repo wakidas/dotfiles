@@ -1,4 +1,5 @@
 .DS_Store
+**/node_modules/
 .nvimlog
 
 # Local-only config and secret material
