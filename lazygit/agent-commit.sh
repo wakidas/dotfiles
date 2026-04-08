@@ -73,7 +73,7 @@ node "$SCRIPT_DIR/agent-commit.mjs" \
 API_PID=$!
 start_watchdog "$API_PID"
 
-spinner "$API_PID" "OpenAI APIがコミットメッセージを生成中..."
+spinner "$API_PID" "AIがコミットメッセージを生成中..."
 
 if ! wait "$API_PID"; then
   echo "エラー: 生成に失敗しました"
