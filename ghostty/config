@@ -3,3 +3,6 @@ keybind = ctrl+super+l=goto_split:right
 keybind = ctrl+super+k=goto_split:top
 keybind = ctrl+super+j=goto_split:bottom
 confirm-close-surface = false
+ 
+ # 行の高さをpxで指定
+adjust-cell-height = 4 
