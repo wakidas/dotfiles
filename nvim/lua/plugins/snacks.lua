@@ -32,8 +32,8 @@ return {
           },
         },
         sources = {
-          files = { hidden = true, ignored = true, exclude = exclude },
-          grep = { hidden = true, ignored = true, exclude = exclude },
+          files = { hidden = true, ignored = true, exclude = exclude, args = { "--glob", "!node_modules/**" } },
+          grep = { hidden = true, ignored = true, exclude = exclude, args = { "--glob", "!node_modules/**" } },
           explorer = { hidden = true, ignored = true, exclude = exclude },
         },
       },
@@ -52,6 +52,7 @@ return {
           matcher = {
             sort_empty = false,
           },
+          args = { "--glob", "!node_modules/**" },
         })
       end,
       desc = "最近のファイル",
