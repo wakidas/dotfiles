@@ -17,8 +17,9 @@ vim.opt.timeoutlen = 500 -- Leaderキーのタイムアウト（デフォルト:
 vim.opt.ttimeoutlen = 0 -- モード切り替え時の遅延を無くす
 vim.opt.wildoptions:append("fuzzy") -- コマンド補完で MarkdownPreview などを見つけやすくする
 
--- カーソル行をハイライト
+-- カーソル行・列をハイライト
 vim.opt.cursorline = true
+vim.opt.cursorcolumn = true
 
 -- インデント設定
 vim.opt.tabstop = 2 -- タブ文字の表示幅
