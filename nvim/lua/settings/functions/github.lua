@@ -11,10 +11,11 @@ local function get_github_url()
 
 	-- ファイルとGit情報を取得
 	local filepath = api.nvim_buf_get_name(0)
-	local repo_root = vim.fn.systemlist("git rev-parse --show-toplevel")[1]
-	local rel_path = filepath:gsub(repo_root .. "/", "")
-	local remote = vim.fn.systemlist("git config --get remote.origin.url")[1]
-	local branch = vim.fn.systemlist("git rev-parse --abbrev-ref HEAD")[1]
+	local file_dir = vim.fn.shellescape(vim.fn.fnamemodify(filepath, ":h"))
+	local repo_root = vim.fn.systemlist("git -C " .. file_dir .. " rev-parse --show-toplevel")[1]
+	local rel_path = filepath:gsub(vim.pesc(repo_root) .. "/", "")
+	local remote = vim.fn.systemlist("git -C " .. file_dir .. " config --get remote.origin.url")[1]
+	local branch = vim.fn.systemlist("git -C " .. file_dir .. " rev-parse --abbrev-ref HEAD")[1]
 
 	-- リモートURLをHTTPS形式に変換
 	remote = remote:gsub("ssh://git@github.com/", "https://github.com/")
