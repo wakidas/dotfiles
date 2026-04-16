@@ -5,20 +5,31 @@
 
 local M = {}
 
----ファイルの絶対パスをクリップボードにコピー
-function M.copy_full_path()
+---git project rootからの相対パスを取得（取得できない場合は絶対パスを返す）
+local function get_git_relative_path()
 	local abs_path = vim.fn.expand("%:p")
-	-- URIスキーム（oil://, fugitive://, term://等）を除去
 	abs_path = abs_path:gsub("^%w+://", "")
-	vim.fn.setreg("+", abs_path)
-	vim.notify("コピーしました: " .. abs_path, vim.log.levels.INFO)
+	local git_root = vim.fn.system("git -C " .. vim.fn.shellescape(vim.fn.fnamemodify(abs_path, ":h")) .. " rev-parse --show-toplevel 2>/dev/null")
+	git_root = vim.trim(git_root)
+	if git_root == "" then
+		return abs_path
+	end
+	-- git_root末尾のスラッシュを正規化し、相対パスを計算
+	local rel_path = abs_path:sub(#git_root + 2)
+	return rel_path
 end
 
----ファイルのcwd相対パス:行数をクリップボードにコピー
+---ファイルのgit root相対パスをクリップボードにコピー
+function M.copy_full_path()
+	local path = get_git_relative_path()
+	vim.fn.setreg("+", path)
+	vim.notify("コピーしました: " .. path, vim.log.levels.INFO)
+end
+
+---ファイルのgit root相対パス:行数をクリップボードにコピー
 function M.copy_path_with_line()
-	local rel_path = vim.fn.expand("%:.")
-	rel_path = rel_path:gsub("^%w+://", "")
-	local path_with_line = rel_path .. ":" .. vim.fn.line(".")
+	local path = get_git_relative_path()
+	local path_with_line = path .. ":" .. vim.fn.line(".")
 	vim.fn.setreg("+", path_with_line)
 	vim.notify("コピーしました: " .. path_with_line, vim.log.levels.INFO)
 end
