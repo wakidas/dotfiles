@@ -1,3 +1,7 @@
+# theme = Flexoki Light
+#background = #ffffff
+#foreground = #24292f
+
 keybind = ctrl+super+h=goto_split:left
 keybind = ctrl+super+l=goto_split:right
 keybind = ctrl+super+k=goto_split:top
