@@ -19,6 +19,28 @@ return {
         end
       end
     end
+
+    -- recent ソース用のパス除外パターン（plain string matching）
+    -- .wakida-pickerexclude のパターンをグロブ記号除去して流用
+    local recent_exclude = { "node_modules" }
+    for _, pat in ipairs(exclude) do
+      local plain = pat:gsub("/%*+$", ""):gsub("%*+$", "")
+      if plain ~= "" then
+        table.insert(recent_exclude, plain)
+      end
+    end
+
+    -- unique_file と除外パターンを組み合わせた transform
+    local function recent_transform(item, ctx)
+      ctx.meta.done = ctx.meta.done or {}
+      local path = Snacks.picker.util.path(item)
+      if not path or ctx.meta.done[path] then return false end
+      ctx.meta.done[path] = true
+      for _, pat in ipairs(recent_exclude) do
+        if path:find(pat, 1, true) then return false end
+      end
+    end
+
     return {
       picker = {
         enabled = true,
@@ -32,8 +54,8 @@ return {
           },
         },
         sources = {
-          files = { hidden = true, ignored = true, exclude = exclude, args = { "--glob", "!node_modules/**" } },
-          grep = { hidden = true, ignored = true, exclude = exclude, args = { "--glob", "!node_modules/**" } },
+          files = { hidden = true, ignored = true, exclude = exclude, args = { "--glob", "!node_modules/**", "--follow" } },
+          grep = { hidden = true, ignored = true, exclude = exclude, args = { "--glob", "!node_modules/**", "--follow" } },
           explorer = { hidden = true, ignored = true, exclude = exclude },
         },
       },
@@ -48,11 +70,13 @@ return {
           multi = { "recent", "files" },
           format = "file",
           filter = { cwd = true },
-          transform = "unique_file",
+          hidden = true,
+          ignored = true,
+          transform = recent_transform,
           matcher = {
             sort_empty = false,
           },
-          args = { "--glob", "!node_modules/**" },
+          args = { "--glob", "!node_modules/**", "--follow" },
         })
       end,
       desc = "最近のファイル",
