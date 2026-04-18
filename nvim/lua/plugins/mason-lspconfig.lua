@@ -61,7 +61,7 @@ return {
 		-- キーマップ設定
 		vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "定義へジャンプ" })
 		vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "ホバー情報を表示" })
-		vim.keymap.set("n", "gr", vim.lsp.buf.references, { desc = "参照箇所を表示" })
+		vim.keymap.set("n", "gr", function() Snacks.picker.lsp_references() end, { desc = "参照箇所を表示" })
 		vim.keymap.set("n", "gn", vim.lsp.buf.rename, { desc = "リネーム" })
 		vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "コードアクション" })
 		vim.keymap.set("n", "gi", function()
