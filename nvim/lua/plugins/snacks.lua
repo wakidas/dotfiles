@@ -1,3 +1,32 @@
+local exclude = {}
+local exclude_file = vim.fn.getcwd() .. "/.wakida-pickerexclude"
+if vim.fn.filereadable(exclude_file) == 1 then
+  for line in io.lines(exclude_file) do
+    line = vim.trim(line)
+    if line ~= "" and not line:match("^#") then
+      table.insert(exclude, line)
+    end
+  end
+end
+
+local recent_exclude = { "node_modules" }
+for _, pat in ipairs(exclude) do
+  local plain = pat:gsub("/%*+$", ""):gsub("%*+$", "")
+  if plain ~= "" then
+    table.insert(recent_exclude, plain)
+  end
+end
+
+local function recent_transform(item, ctx)
+  ctx.meta.done = ctx.meta.done or {}
+  local path = Snacks.picker.util.path(item)
+  if not path or ctx.meta.done[path] then return false end
+  ctx.meta.done[path] = true
+  for _, pat in ipairs(recent_exclude) do
+    if path:find(pat, 1, true) then return false end
+  end
+end
+
 return {
   "folke/snacks.nvim",
   priority = 1000,
@@ -10,38 +39,6 @@ return {
     vim.api.nvim_set_hl(0, "SnacksTerminalBorder", { fg = "#4fc1c0" })
   end,
   opts = function()
-    local exclude = {}
-    local exclude_file = vim.fn.getcwd() .. "/.wakida-pickerexclude"
-    if vim.fn.filereadable(exclude_file) == 1 then
-      for line in io.lines(exclude_file) do
-        line = vim.trim(line)
-        if line ~= "" and not line:match("^#") then
-          table.insert(exclude, line)
-        end
-      end
-    end
-
-    -- recent ソース用のパス除外パターン（plain string matching）
-    -- .wakida-pickerexclude のパターンをグロブ記号除去して流用
-    local recent_exclude = { "node_modules" }
-    for _, pat in ipairs(exclude) do
-      local plain = pat:gsub("/%*+$", ""):gsub("%*+$", "")
-      if plain ~= "" then
-        table.insert(recent_exclude, plain)
-      end
-    end
-
-    -- unique_file と除外パターンを組み合わせた transform
-    local function recent_transform(item, ctx)
-      ctx.meta.done = ctx.meta.done or {}
-      local path = Snacks.picker.util.path(item)
-      if not path or ctx.meta.done[path] then return false end
-      ctx.meta.done[path] = true
-      for _, pat in ipairs(recent_exclude) do
-        if path:find(pat, 1, true) then return false end
-      end
-    end
-
     return {
       picker = {
         enabled = true,
