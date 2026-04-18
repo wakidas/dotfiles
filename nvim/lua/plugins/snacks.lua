@@ -7,6 +7,7 @@ return {
     -- picker の選択行を見やすくする（moonfly の Visual が背景と被るため）
     vim.api.nvim_set_hl(0, "SnacksPickerListCursorLine", { bg = "#1a3a5c", fg = "#e0e0e0" })
     vim.api.nvim_set_hl(0, "SnacksPickerPreviewCursorLine", { bg = "#1a3a5c", fg = "#e0e0e0" })
+    vim.api.nvim_set_hl(0, "SnacksTerminalBorder", { fg = "#4fc1c0" })
   end,
   opts = function()
     local exclude = {}
@@ -65,7 +66,10 @@ return {
       input = { enabled = true },
       -- vim.notify をフロート通知に置き換え（LSP progress・エラーなどが右上に表示）
       notifier = { enabled = true, width = { min = 0.6, max = 0.8 } },
-      styles = { notification = { wo = { wrap = true } } },
+      styles = {
+        notification = { wo = { wrap = true } },
+        terminal = { wo = { winhighlight = "FloatBorder:SnacksTerminalBorder" } },
+      },
     }
   end,
   keys = {
@@ -90,5 +94,6 @@ return {
     },
     { "<leader>f", function() Snacks.picker.grep() end, desc = "文字列検索" },
     { "<leader>h", function() Snacks.picker.help() end, desc = "ヘルプ" },
+    { "<leader>t", function() Snacks.terminal(nil, { win = { position = "float", width = 0.8, height = 0.8, border = "rounded" }, keys = { ["<C-d>"] = "hide" } }) end, desc = "フロートターミナル" },
   },
 }
