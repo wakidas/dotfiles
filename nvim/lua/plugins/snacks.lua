@@ -92,5 +92,7 @@ return {
     { "<leader>f", function() Snacks.picker.grep() end, desc = "文字列検索" },
     { "<leader>h", function() Snacks.picker.help() end, desc = "ヘルプ" },
     { "<leader>t", function() Snacks.terminal(nil, { win = { position = "float", width = 0.8, height = 0.8, border = "rounded" }, keys = { ["<C-d>"] = "hide" } }) end, desc = "フロートターミナル" },
+    { "[i", function() Snacks.scope.jump({ min_size = 2, edge = true, bottom = false }) end, mode = { "n", "x", "o" }, desc = "スコープの上端へジャンプ" },
+    { "]i", function() Snacks.scope.jump({ min_size = 2, edge = true, bottom = true }) end, mode = { "n", "x", "o" }, desc = "スコープの下端へジャンプ" },
   },
 }
