@@ -59,6 +59,8 @@ return {
           explorer = { hidden = true, ignored = true, exclude = exclude },
         },
       },
+      -- インデントガイド + スコープを ┌└ で囲む GitHub 風表示（アニメなし）
+      indent = { enabled = true, animate = { enabled = false }, chunk = { enabled = true } },
     }
   end,
   keys = {
