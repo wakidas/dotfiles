@@ -17,6 +17,11 @@ for _, pat in ipairs(exclude) do
   end
 end
 
+local function git_root_path()
+  local cwd = vim.fn.getcwd()
+  return vim.fs.root(cwd, ".git") or cwd
+end
+
 local function recent_transform(item, ctx)
   ctx.meta.done = ctx.meta.done or {}
   local path = Snacks.picker.util.path(item)
@@ -77,6 +82,7 @@ return {
           title = "Files",
           multi = { "recent", "files" },
           format = "file",
+          cwd = git_root_path(),
           filter = { cwd = true },
           hidden = true,
           ignored = true,
@@ -89,7 +95,7 @@ return {
       end,
       desc = "最近のファイル",
     },
-    { "<leader>f", function() Snacks.picker.grep() end, desc = "文字列検索" },
+    { "<leader>f", function() Snacks.picker.grep({ cwd = git_root_path() }) end, desc = "文字列検索" },
     { "<leader>h", function() Snacks.picker.help() end, desc = "ヘルプ" },
     { "<leader>t", function() Snacks.terminal(nil, { win = { position = "float", width = 0.8, height = 0.8, border = "rounded" }, keys = { ["<C-d>"] = "hide" } }) end, desc = "フロートターミナル" },
     { "[i", function() Snacks.scope.jump({ min_size = 2, edge = true, bottom = false }) end, mode = { "n", "x", "o" }, desc = "スコープの上端へジャンプ" },
