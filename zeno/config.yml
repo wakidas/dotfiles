@@ -1,4 +1,8 @@
 snippets:
+  - name: git current branch & copy
+    keyword: gb
+    snippet: git branch --show-current | tee >(pbcopy)
+  
   - name: git status
     keyword: gs
     snippet: git status --short --branch
