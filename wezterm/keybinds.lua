@@ -226,6 +226,21 @@ return {
     { key = "Tab", mods = "SHIFT|CTRL", action = act.ActivateTabRelative(-1) },
     -- Tab入れ替え
     { key = "{", mods = "LEADER", action = act({ MoveTabRelative = -1 }) },
+    -- 番号を指定してTabを移動
+    {
+      key = ".",
+      mods = "LEADER",
+      action = act.PromptInputLine({
+        description = "Move tab to position (1-based):",
+        action = wezterm.action_callback(function(win, pane, line)
+          if not line then return end
+          local target = tonumber(line)
+          if target then
+            win:perform_action(act.MoveTab(target - 1), pane)
+          end
+        end),
+      }),
+    },
     -- Tab新規作成
     { key = "t", mods = "SUPER", action = act({ SpawnTab = "CurrentPaneDomain" }) },
     -- Tabを閉じる

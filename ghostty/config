@@ -7,11 +7,11 @@ keybind = ctrl+super+l=goto_split:right
 keybind = ctrl+super+k=goto_split:top
 keybind = ctrl+super+j=goto_split:bottom
 confirm-close-surface = false
-keybind = ctrl+q>[=copy_mode
-keybind = ctrl+q>h=resize_split:left,10
-keybind = ctrl+q>l=resize_split:right,10
-keybind = ctrl+q>k=resize_split:up,10
-keybind = ctrl+q>j=resize_split:down,10
+# keybind = ctrl+q>[=copy_mode
+# keybind = ctrl+q>h=resize_split:left,10
+# keybind = ctrl+q>l=resize_split:right,10
+# keybind = ctrl+q>k=resize_split:up,10
+# keybind = ctrl+q>j=resize_split:down,10
  
  # 行の高さをpxで指定
 adjust-cell-height = 4 

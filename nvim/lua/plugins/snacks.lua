@@ -68,6 +68,8 @@ return {
       input = { enabled = true },
       -- vim.notify をフロート通知に置き換え（LSP progress・エラーなどが右上に表示）
       notifier = { enabled = true, width = { min = 0.6, max = 0.8 } },
+      -- カーソル下のシンボルを LSP document_highlight で自動ハイライト、]]/[[ で参照ジャンプ
+      words = { enabled = true },
       styles = {
         notification = { wo = { wrap = true } },
         terminal = { wo = { winhighlight = "FloatBorder:SnacksTerminalBorder" } },
