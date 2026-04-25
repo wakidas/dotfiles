@@ -176,6 +176,14 @@ wezterm.on("update-right-status", function(window, pane)
   -- アクティブペインになったらアラート解除
   clear_agent_alert_for_pane(pane)
 
+  -- ワークスペース名をタブバー左端に表示
+  window:set_left_status(wezterm.format({
+    { Background = { Color = "#3b4252" } },
+    { Foreground = { Color = CURSOR_CYAN } },
+    { Attribute = { Intensity = "Bold" } },
+    { Text = " " .. window:active_workspace() .. " " },
+  }))
+
   local name = window:active_key_table()
 
   -- アラート数の変化を tab_max_width に反映させて format-tab-title の再評価を強制する
