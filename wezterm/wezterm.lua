@@ -19,35 +19,35 @@ wezterm.GLOBAL.agent_blink_tick = wezterm.GLOBAL.agent_blink_tick or 0
 
 -- エージェントがOSC SetUserVarでclaude_status=doneを送ってきたペインを記録
 wezterm.on("user-var-changed", function(_, pane, name, value)
-	if name == AGENT_USER_VAR and value == AGENT_DONE_VALUE then
-		wezterm.GLOBAL.agent_alerting[tostring(pane:pane_id())] = true
-	end
+  if name == AGENT_USER_VAR and value == AGENT_DONE_VALUE then
+    wezterm.GLOBAL.agent_alerting[tostring(pane:pane_id())] = true
+  end
 end)
 
 local function clear_agent_alert_for_pane(pane)
-	if not pane then
-		return
-	end
-	local pid = tostring(pane:pane_id())
-	if wezterm.GLOBAL.agent_alerting[pid] then
-		wezterm.GLOBAL.agent_alerting[pid] = nil
-	end
+  if not pane then
+    return
+  end
+  local pid = tostring(pane:pane_id())
+  if wezterm.GLOBAL.agent_alerting[pid] then
+    wezterm.GLOBAL.agent_alerting[pid] = nil
+  end
 end
 
 local function tab_alert(tab)
-	local marks = {}
-	for _, p in ipairs(tab.panes) do
-		if wezterm.GLOBAL.agent_alerting[tostring(p.pane_id)] then
-			table.insert(marks, AGENT_BADGE_SYMBOL .. (p.pane_index + 1))
-		end
-	end
-	local has_marks = #marks > 0
-	local blink_on = wezterm.GLOBAL.agent_blink_tick == 0
-	return {
-		has_alert = has_marks and blink_on,
-		color = AGENT_NOTIFY_COLOR,
-		badge = has_marks and (table.concat(marks) .. " ") or "",
-	}
+  local marks = {}
+  for _, p in ipairs(tab.panes) do
+    if wezterm.GLOBAL.agent_alerting[tostring(p.pane_id)] then
+      table.insert(marks, AGENT_BADGE_SYMBOL .. (p.pane_index + 1))
+    end
+  end
+  local has_marks = #marks > 0
+  local blink_on = wezterm.GLOBAL.agent_blink_tick == 0
+  return {
+    has_alert = has_marks and blink_on,
+    color = AGENT_NOTIFY_COLOR,
+    badge = has_marks and (table.concat(marks) .. " ") or "",
+  }
 end
 
 config.automatically_reload_config = true
@@ -61,10 +61,10 @@ config.macos_window_background_blur = 20
 
 -- ウィンドウ下部に1行分の余白を追加
 config.window_padding = {
-	left = 0,
-	right = 0,
-	top = 0,
-	bottom = '2cell',
+  left = 0,
+  right = 0,
+  top = 0,
+  bottom = '2cell',
 }
 
 ----------------------------------------------------
@@ -72,8 +72,7 @@ config.window_padding = {
 ----------------------------------------------------
 -- 非アクティブなペインを暗くして、アクティブペインを分かりやすくする
 config.inactive_pane_hsb = {
-	saturation = 0.4, -- 彩度を下げる
-	brightness = 0.3, -- 明るさを下げる
+  brightness = 0.08, -- 明るさを下げる
 }
 ----------------------------------------------------
 -- Tab
@@ -89,13 +88,13 @@ config.hide_tab_bar_if_only_one_tab = false
 
 -- タブバーの透過
 config.window_frame = {
-	inactive_titlebar_bg = "none",
-	active_titlebar_bg = "none",
+  inactive_titlebar_bg = "none",
+  active_titlebar_bg = "none",
 }
 
 -- タブバーを背景色に合わせる
 config.window_background_gradient = {
-	colors = { "#000000" },
+  colors = { "#000000" },
 }
 
 -- タブの追加ボタンを非表示
@@ -106,10 +105,10 @@ config.show_new_tab_button_in_tab_bar = false
 
 -- タブ同士の境界線を非表示
 config.colors = {
-	split = CURSOR_CYAN,
-	tab_bar = {
-		inactive_tab_edge = "none",
-	},
+  split = CURSOR_CYAN,
+  tab_bar = {
+    inactive_tab_edge = "none",
+  },
 }
 
 -- タブの形をカスタマイズ
@@ -119,39 +118,39 @@ local SOLID_LEFT_ARROW = wezterm.nerdfonts.ple_lower_right_triangle
 local SOLID_RIGHT_ARROW = wezterm.nerdfonts.ple_upper_left_triangle
 
 wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_width)
-	local background = "#5c6d74"
-	local foreground = "#FFFFFF"
-	local edge_background = "none"
-	if tab.is_active then
-		background = "#ae8b2d"
-		foreground = "#FFFFFF"
-	end
+  local background = "#5c6d74"
+  local foreground = "#FFFFFF"
+  local edge_background = "none"
+  if tab.is_active then
+    background = "#ae8b2d"
+    foreground = "#FFFFFF"
+  end
 
-	local alert = tab_alert(tab)
-	if alert.has_alert then
-		background = alert.color
-		foreground = "#FFFFFF"
-	end
+  local alert = tab_alert(tab)
+  if alert.has_alert then
+    background = alert.color
+    foreground = "#FFFFFF"
+  end
 
-	local edge_foreground = background
-	-- カスタムタイトルがあれば優先、なければプロセス名を表示
-	local tab_title = tab.tab_title
-	if not tab_title or #tab_title == 0 then
-		tab_title = tab.active_pane.title
-	end
-	local index = tab.tab_index + 1
-	local title = "   " .. alert.badge .. "[" .. index .. "] " .. wezterm.truncate_right(tab_title, max_width - 1) .. "   "
-	return {
-		{ Background = { Color = edge_background } },
-		{ Foreground = { Color = edge_foreground } },
-		{ Text = SOLID_LEFT_ARROW },
-		{ Background = { Color = background } },
-		{ Foreground = { Color = foreground } },
-		{ Text = title },
-		{ Background = { Color = edge_background } },
-		{ Foreground = { Color = edge_foreground } },
-		{ Text = SOLID_RIGHT_ARROW },
-	}
+  local edge_foreground = background
+  -- カスタムタイトルがあれば優先、なければプロセス名を表示
+  local tab_title = tab.tab_title
+  if not tab_title or #tab_title == 0 then
+    tab_title = tab.active_pane.title
+  end
+  local index = tab.tab_index + 1
+  local title = "   " .. alert.badge .. "[" .. index .. "] " .. wezterm.truncate_right(tab_title, max_width - 1) .. "   "
+  return {
+    { Background = { Color = edge_background } },
+    { Foreground = { Color = edge_foreground } },
+    { Text = SOLID_LEFT_ARROW },
+    { Background = { Color = background } },
+    { Foreground = { Color = foreground } },
+    { Text = title },
+    { Background = { Color = edge_background } },
+    { Foreground = { Color = edge_foreground } },
+    { Text = SOLID_RIGHT_ARROW },
+  }
 end)
 
 ----------------------------------------------------
@@ -164,9 +163,9 @@ local MODE_COLORS = {
 
 -- モード表示の設定 { 表示名, 背景色, 文字色 }
 local MODE_LABELS = {
-  copy_mode   = { " COPY ",   "#ffd700", "#000000" },
-  resize_pane = { " RESIZE ", "#ff6b6b", "#000000" },
-  activate_pane = { " PANE ",  "#6bcb77", "#000000" },
+  copy_mode     = { " COPY ", "#ffd700", "#000000" },
+  resize_pane   = { " RESIZE ", "#ff6b6b", "#000000" },
+  activate_pane = { " PANE ", "#6bcb77", "#000000" },
 }
 
 wezterm.on("update-right-status", function(window, pane)
@@ -239,44 +238,44 @@ resurrect.state_manager.periodic_save()
 
 -- セッション保存 LEADER + Shift+s
 table.insert(config.keys, {
-	key = "S",
-	mods = "LEADER|SHIFT",
-	action = wezterm.action_callback(function(win, pane)
-		resurrect.state_manager.save_state(resurrect.workspace_state.get_workspace_state())
-		wezterm.GLOBAL.resurrect_message = "State saved!"
-		wezterm.GLOBAL.resurrect_message_time = os.time()
-	end),
+  key = "S",
+  mods = "LEADER|SHIFT",
+  action = wezterm.action_callback(function(win, pane)
+    resurrect.state_manager.save_state(resurrect.workspace_state.get_workspace_state())
+    wezterm.GLOBAL.resurrect_message = "State saved!"
+    wezterm.GLOBAL.resurrect_message_time = os.time()
+  end),
 })
 
 -- セッション復元 LEADER + Shift+r
 table.insert(config.keys, {
-	key = "R",
-	mods = "LEADER|SHIFT",
-	action = wezterm.action_callback(function(win, pane)
-		resurrect.fuzzy_loader.fuzzy_load(win, pane, function(id, label)
-			-- idからタイプとファイル名を抽出
-			local type = string.match(id, "^([^/]+)")
-			id = string.match(id, "([^/]+)$")
-			id = string.match(id, "(.+)%..+$")
+  key = "R",
+  mods = "LEADER|SHIFT",
+  action = wezterm.action_callback(function(win, pane)
+    resurrect.fuzzy_loader.fuzzy_load(win, pane, function(id, label)
+      -- idからタイプとファイル名を抽出
+      local type = string.match(id, "^([^/]+)")
+      id = string.match(id, "([^/]+)$")
+      id = string.match(id, "(.+)%..+$")
 
-			local opts = {
-				relative = true,
-				restore_text = true,
-				on_pane_restore = resurrect.tab_state.default_on_pane_restore,
-			}
+      local opts = {
+        relative = true,
+        restore_text = true,
+        on_pane_restore = resurrect.tab_state.default_on_pane_restore,
+      }
 
-			if type == "workspace" then
-				local state = resurrect.state_manager.load_state(id, "workspace")
-				resurrect.workspace_state.restore_workspace(state, opts)
-			elseif type == "window" then
-				local state = resurrect.state_manager.load_state(id, "window")
-				resurrect.window_state.restore_window(pane:window(), state, opts)
-			elseif type == "tab" then
-				local state = resurrect.state_manager.load_state(id, "tab")
-				resurrect.tab_state.restore_tab(pane:window(), state, opts)
-			end
-		end)
-	end),
+      if type == "workspace" then
+        local state = resurrect.state_manager.load_state(id, "workspace")
+        resurrect.workspace_state.restore_workspace(state, opts)
+      elseif type == "window" then
+        local state = resurrect.state_manager.load_state(id, "window")
+        resurrect.window_state.restore_window(pane:window(), state, opts)
+      elseif type == "tab" then
+        local state = resurrect.state_manager.load_state(id, "tab")
+        resurrect.tab_state.restore_tab(pane:window(), state, opts)
+      end
+    end)
+  end),
 })
 
 return config
