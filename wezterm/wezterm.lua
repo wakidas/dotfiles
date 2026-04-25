@@ -15,12 +15,16 @@ local AGENT_BADGE_SYMBOL = "◉"
 local CURSOR_CYAN = "#80EBDF"
 
 wezterm.GLOBAL.agent_alerting = wezterm.GLOBAL.agent_alerting or {}
-wezterm.GLOBAL.agent_blink_tick = wezterm.GLOBAL.agent_blink_tick or 0
+wezterm.GLOBAL.agent_alerting_count = wezterm.GLOBAL.agent_alerting_count or 0
 
 -- エージェントがOSC SetUserVarでclaude_status=doneを送ってきたペインを記録
 wezterm.on("user-var-changed", function(_, pane, name, value)
   if name == AGENT_USER_VAR and value == AGENT_DONE_VALUE then
-    wezterm.GLOBAL.agent_alerting[tostring(pane:pane_id())] = true
+    local pid = tostring(pane:pane_id())
+    if not wezterm.GLOBAL.agent_alerting[pid] then
+      wezterm.GLOBAL.agent_alerting_count = wezterm.GLOBAL.agent_alerting_count + 1
+    end
+    wezterm.GLOBAL.agent_alerting[pid] = true
   end
 end)
 
@@ -31,6 +35,7 @@ local function clear_agent_alert_for_pane(pane)
   local pid = tostring(pane:pane_id())
   if wezterm.GLOBAL.agent_alerting[pid] then
     wezterm.GLOBAL.agent_alerting[pid] = nil
+    wezterm.GLOBAL.agent_alerting_count = math.max(0, wezterm.GLOBAL.agent_alerting_count - 1)
   end
 end
 
@@ -42,9 +47,8 @@ local function tab_alert(tab)
     end
   end
   local has_marks = #marks > 0
-  local blink_on = wezterm.GLOBAL.agent_blink_tick == 0
   return {
-    has_alert = has_marks and blink_on,
+    has_alert = has_marks,
     color = AGENT_NOTIFY_COLOR,
     badge = has_marks and (table.concat(marks) .. " ") or "",
   }
@@ -174,20 +178,15 @@ wezterm.on("update-right-status", function(window, pane)
 
   local name = window:active_key_table()
 
-  -- アラート中はtickを進める。set_config_overridesにtickを反映させて
-  -- format-tab-titleの再評価を強制する（set_right_statusだけでは再評価されないため）
-  local has_alert = next(wezterm.GLOBAL.agent_alerting) ~= nil
-  if has_alert then
-    wezterm.GLOBAL.agent_blink_tick = (wezterm.GLOBAL.agent_blink_tick + 1) % 2
-  else
-    wezterm.GLOBAL.agent_blink_tick = 0
-  end
+  -- アラート数の変化を tab_max_width に反映させて format-tab-title の再評価を強制する
+  -- （set_right_status だけでは再評価されないため）
+  local alert_count = wezterm.GLOBAL.agent_alerting_count
 
   -- モード別カーソル色切り替え
   local color = MODE_COLORS[name] or MODE_COLORS.default
   window:set_config_overrides({
     force_reverse_video_cursor = false,
-    tab_max_width = has_alert and (32 + wezterm.GLOBAL.agent_blink_tick) or 32,
+    tab_max_width = 32 + alert_count,
     colors = {
       cursor_bg = color,
       cursor_fg = "#000000",
@@ -233,8 +232,8 @@ config.leader = { key = "q", mods = "CTRL", timeout_milliseconds = 2000 }
 ----------------------------------------------------
 -- resurrect (セッション保存・復元)
 ----------------------------------------------------
--- 定期自動保存（15分ごと）
-resurrect.state_manager.periodic_save()
+-- 定期自動保存（30秒ごと）
+resurrect.state_manager.periodic_save({ interval_seconds = 30, save_workspaces = true })
 
 -- セッション保存 LEADER + Shift+s
 table.insert(config.keys, {
