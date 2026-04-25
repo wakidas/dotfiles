@@ -273,7 +273,38 @@ table.insert(config.keys, {
 
       if type == "workspace" then
         local state = resurrect.state_manager.load_state(id, "workspace")
+        local target_ws = state.workspace or id
+
+        local current_mux_win = pane:window()
+        local reuse_current = (current_mux_win:get_workspace() == target_ws)
+
+        -- 累積防止: 復元先 workspace の既存ウィンドウを kill
+        -- （同 workspace への上書き復元時のみ、現ウィンドウは再利用するため除外）
+        for _, mux_win in ipairs(wezterm.mux.all_windows()) do
+          if mux_win:get_workspace() == target_ws
+            and not (reuse_current and mux_win:window_id() == current_mux_win:window_id()) then
+            for _, mux_tab in ipairs(mux_win:tabs()) do
+              for _, tp in ipairs(mux_tab:panes()) do
+                wezterm.run_child_process({
+                  "/opt/homebrew/bin/wezterm", "cli", "kill-pane", "--pane-id", tostring(tp:pane_id()),
+                })
+              end
+            end
+          end
+        end
+
+        -- spawn される追加ウィンドウも target_ws に属させる
+        opts.spawn_in_workspace = true
+        if reuse_current then
+          -- 同 workspace への上書き: 現ウィンドウを window[0] として再利用、既存タブ/ペインは閉じる
+          opts.window = current_mux_win
+          opts.close_open_tabs = true
+          opts.close_open_panes = true
+        end
         resurrect.workspace_state.restore_workspace(state, opts)
+
+        -- アクティブ workspace を target に切替（spawn or 再利用で必ず1ウィンドウ存在）
+        wezterm.mux.set_active_workspace(target_ws)
       elseif type == "window" then
         local state = resurrect.state_manager.load_state(id, "window")
         resurrect.window_state.restore_window(pane:window(), state, opts)
