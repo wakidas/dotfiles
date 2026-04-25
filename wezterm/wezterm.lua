@@ -23,6 +23,14 @@ wezterm.on("user-var-changed", function(_, pane, name, value)
     local pid = tostring(pane:pane_id())
     if not wezterm.GLOBAL.agent_alerting[pid] then
       wezterm.GLOBAL.agent_alerting_count = wezterm.GLOBAL.agent_alerting_count + 1
+      wezterm.background_child_process({
+        "/opt/homebrew/bin/terminal-notifier",
+        "-title", "WezTerm",
+        "-message", "Agent done: " .. (pane:get_title() or ""),
+        "-sound", "Glass",
+        "-activate", "com.github.wez.wezterm",
+        "-group", "wezterm-agent-" .. pid,
+      })
     end
     wezterm.GLOBAL.agent_alerting[pid] = true
   end
