@@ -5,6 +5,51 @@ local resurrect = wezterm.plugin.require("https://github.com/MLFlexer/resurrect.
 -- GLOBAL初期化
 wezterm.GLOBAL = wezterm.GLOBAL or {}
 
+----------------------------------------------------
+-- AIエージェント完了通知 (タブ点滅 + バッジ)
+----------------------------------------------------
+local AGENT_USER_VAR = "claude_status"
+local AGENT_DONE_VALUE = "done"
+local AGENT_NOTIFY_COLOR = "#e06c75"
+local AGENT_BADGE_SYMBOL = "◉"
+local CURSOR_CYAN = "#80EBDF"
+
+wezterm.GLOBAL.agent_alerting = wezterm.GLOBAL.agent_alerting or {}
+wezterm.GLOBAL.agent_blink_tick = wezterm.GLOBAL.agent_blink_tick or 0
+
+-- エージェントがOSC SetUserVarでclaude_status=doneを送ってきたペインを記録
+wezterm.on("user-var-changed", function(_, pane, name, value)
+	if name == AGENT_USER_VAR and value == AGENT_DONE_VALUE then
+		wezterm.GLOBAL.agent_alerting[tostring(pane:pane_id())] = true
+	end
+end)
+
+local function clear_agent_alert_for_pane(pane)
+	if not pane then
+		return
+	end
+	local pid = tostring(pane:pane_id())
+	if wezterm.GLOBAL.agent_alerting[pid] then
+		wezterm.GLOBAL.agent_alerting[pid] = nil
+	end
+end
+
+local function tab_alert(tab)
+	local marks = {}
+	for _, p in ipairs(tab.panes) do
+		if wezterm.GLOBAL.agent_alerting[tostring(p.pane_id)] then
+			table.insert(marks, AGENT_BADGE_SYMBOL .. (p.pane_index + 1))
+		end
+	end
+	local has_marks = #marks > 0
+	local blink_on = wezterm.GLOBAL.agent_blink_tick == 0
+	return {
+		has_alert = has_marks and blink_on,
+		color = AGENT_NOTIFY_COLOR,
+		badge = has_marks and (table.concat(marks) .. " ") or "",
+	}
+end
+
 config.automatically_reload_config = true
 config.font_size = 12.0
 -- ペイン分割時のサイズ計算を改善
@@ -61,6 +106,7 @@ config.show_new_tab_button_in_tab_bar = false
 
 -- タブ同士の境界線を非表示
 config.colors = {
+	split = CURSOR_CYAN,
 	tab_bar = {
 		inactive_tab_edge = "none",
 	},
@@ -80,6 +126,13 @@ wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_wid
 		background = "#ae8b2d"
 		foreground = "#FFFFFF"
 	end
+
+	local alert = tab_alert(tab)
+	if alert.has_alert then
+		background = alert.color
+		foreground = "#FFFFFF"
+	end
+
 	local edge_foreground = background
 	-- カスタムタイトルがあれば優先、なければプロセス名を表示
 	local tab_title = tab.tab_title
@@ -87,7 +140,7 @@ wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_wid
 		tab_title = tab.active_pane.title
 	end
 	local index = tab.tab_index + 1
-	local title = "   [" .. index .. "] " .. wezterm.truncate_right(tab_title, max_width - 1) .. "   "
+	local title = "   " .. alert.badge .. "[" .. index .. "] " .. wezterm.truncate_right(tab_title, max_width - 1) .. "   "
 	return {
 		{ Background = { Color = edge_background } },
 		{ Foreground = { Color = edge_foreground } },
@@ -105,7 +158,7 @@ end)
 -- モード別カーソル色
 ----------------------------------------------------
 local MODE_COLORS = {
-  default = "#80EBDF",
+  default = CURSOR_CYAN,
   copy_mode = "#ffd700",
 }
 
@@ -117,15 +170,29 @@ local MODE_LABELS = {
 }
 
 wezterm.on("update-right-status", function(window, pane)
+  -- アクティブペインになったらアラート解除
+  clear_agent_alert_for_pane(pane)
+
   local name = window:active_key_table()
+
+  -- アラート中はtickを進める。set_config_overridesにtickを反映させて
+  -- format-tab-titleの再評価を強制する（set_right_statusだけでは再評価されないため）
+  local has_alert = next(wezterm.GLOBAL.agent_alerting) ~= nil
+  if has_alert then
+    wezterm.GLOBAL.agent_blink_tick = (wezterm.GLOBAL.agent_blink_tick + 1) % 2
+  else
+    wezterm.GLOBAL.agent_blink_tick = 0
+  end
 
   -- モード別カーソル色切り替え
   local color = MODE_COLORS[name] or MODE_COLORS.default
   window:set_config_overrides({
     force_reverse_video_cursor = false,
+    tab_max_width = has_alert and (32 + wezterm.GLOBAL.agent_blink_tick) or 32,
     colors = {
       cursor_bg = color,
       cursor_fg = "#000000",
+      split = CURSOR_CYAN,
       tab_bar = {
         inactive_tab_edge = "none",
       },
