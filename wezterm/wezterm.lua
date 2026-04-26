@@ -11,6 +11,8 @@ wezterm.GLOBAL = wezterm.GLOBAL or {}
 local AGENT_USER_VAR = "claude_status"
 local AGENT_DONE_VALUE = "done"
 local AGENT_NOTIFY_COLOR = "#e06c75"
+local AGENT_NOTIFIER_BIN = wezterm.config_dir
+  .. "/wezterm-notifier.app/Contents/MacOS/terminal-notifier"
 local AGENT_BADGE_SYMBOL = "◉"
 local CURSOR_CYAN = "#80EBDF"
 
@@ -56,7 +58,7 @@ wezterm.on("user-var-changed", function(_, pane, name, value)
   if not wezterm.GLOBAL.agent_alerting[pid] then
     wezterm.GLOBAL.agent_alerting_count = wezterm.GLOBAL.agent_alerting_count + 1
     wezterm.background_child_process({
-      "/opt/homebrew/bin/terminal-notifier",
+      AGENT_NOTIFIER_BIN,
       "-title", "WezTerm",
       "-message", "Agent done: " .. (pane:get_title() or ""),
       "-sound", "Glass",
