@@ -17,23 +17,54 @@ local CURSOR_CYAN = "#80EBDF"
 wezterm.GLOBAL.agent_alerting = wezterm.GLOBAL.agent_alerting or {}
 wezterm.GLOBAL.agent_alerting_count = wezterm.GLOBAL.agent_alerting_count or 0
 
+-- ユーザーが今このペインを実際に見ているか
+-- = アクティブタブのアクティブペイン、かつ WezTerm ウィンドウに OS フォーカスがある
+local function pane_is_visible_to_user(pane)
+  local tab = pane:tab()
+  local mux_win = pane:window()
+  if not (tab and mux_win) then
+    return false
+  end
+  local active_tab = mux_win:active_tab()
+  if not active_tab or active_tab:tab_id() ~= tab:tab_id() then
+    return false
+  end
+  local active_pane = tab:active_pane()
+  if not (active_pane and active_pane:pane_id() == pane:pane_id()) then
+    return false
+  end
+  local gui_win = wezterm.gui
+    and wezterm.gui.gui_window_for_mux_window
+    and wezterm.gui.gui_window_for_mux_window(mux_win:window_id())
+  if not gui_win then
+    return false
+  end
+  return gui_win.is_focused and gui_win:is_focused()
+end
+
 -- エージェントがOSC SetUserVarでclaude_status=doneを送ってきたペインを記録
 wezterm.on("user-var-changed", function(_, pane, name, value)
-  if name == AGENT_USER_VAR and value == AGENT_DONE_VALUE then
-    local pid = tostring(pane:pane_id())
-    if not wezterm.GLOBAL.agent_alerting[pid] then
-      wezterm.GLOBAL.agent_alerting_count = wezterm.GLOBAL.agent_alerting_count + 1
-      wezterm.background_child_process({
-        "/opt/homebrew/bin/terminal-notifier",
-        "-title", "WezTerm",
-        "-message", "Agent done: " .. (pane:get_title() or ""),
-        "-sound", "Glass",
-        "-activate", "com.github.wez.wezterm",
-        "-group", "wezterm-agent-" .. pid,
-      })
-    end
-    wezterm.GLOBAL.agent_alerting[pid] = true
+  if name ~= AGENT_USER_VAR or value ~= AGENT_DONE_VALUE then
+    return
   end
+  -- ユーザーが今そのペインを実際に見ている時だけノイズなのでスキップ。
+  -- WezTerm 自体が非アクティブ（別アプリ操作中）なら通知する。
+  if pane_is_visible_to_user(pane) then
+    return
+  end
+  local pid = tostring(pane:pane_id())
+  if not wezterm.GLOBAL.agent_alerting[pid] then
+    wezterm.GLOBAL.agent_alerting_count = wezterm.GLOBAL.agent_alerting_count + 1
+    wezterm.background_child_process({
+      "/opt/homebrew/bin/terminal-notifier",
+      "-title", "WezTerm",
+      "-message", "Agent done: " .. (pane:get_title() or ""),
+      "-sound", "Glass",
+      "-activate", "com.github.wez.wezterm",
+      "-group", "wezterm-agent-" .. pid,
+    })
+  end
+  wezterm.GLOBAL.agent_alerting[pid] = true
 end)
 
 local function clear_agent_alert_for_pane(pane)
