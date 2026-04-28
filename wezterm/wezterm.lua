@@ -12,7 +12,7 @@ local AGENT_USER_VAR = "claude_status"
 local AGENT_DONE_VALUE = "done"
 local AGENT_NOTIFY_COLOR = "#e06c75"
 local AGENT_NOTIFIER_BIN = wezterm.config_dir
-  .. "/wezterm-notifier.app/Contents/MacOS/terminal-notifier"
+    .. "/wezterm-notifier.app/Contents/MacOS/terminal-notifier"
 local AGENT_BADGE_SYMBOL = "◉"
 local CURSOR_CYAN = "#80EBDF"
 
@@ -36,8 +36,8 @@ local function pane_is_visible_to_user(pane)
     return false
   end
   local gui_win = wezterm.gui
-    and wezterm.gui.gui_window_for_mux_window
-    and wezterm.gui.gui_window_for_mux_window(mux_win:window_id())
+      and wezterm.gui.gui_window_for_mux_window
+      and wezterm.gui.gui_window_for_mux_window(mux_win:window_id())
   if not gui_win then
     return false
   end
@@ -117,7 +117,7 @@ config.window_padding = {
 ----------------------------------------------------
 -- 非アクティブなペインを暗くして、アクティブペインを分かりやすくする
 config.inactive_pane_hsb = {
-  brightness = 0.08, -- 明るさを下げる
+  brightness = 0.2, -- 明るさを下げる
 }
 ----------------------------------------------------
 -- Tab
@@ -323,7 +323,7 @@ table.insert(config.keys, {
         -- （同 workspace への上書き復元時のみ、現ウィンドウは再利用するため除外）
         for _, mux_win in ipairs(wezterm.mux.all_windows()) do
           if mux_win:get_workspace() == target_ws
-            and not (reuse_current and mux_win:window_id() == current_mux_win:window_id()) then
+              and not (reuse_current and mux_win:window_id() == current_mux_win:window_id()) then
             for _, mux_tab in ipairs(mux_win:tabs()) do
               for _, tp in ipairs(mux_tab:panes()) do
                 wezterm.run_child_process({
