@@ -268,6 +268,11 @@ return {
     { key = "l", mods = "LEADER", action = act.ActivatePaneDirection("Right") },
     { key = "k", mods = "LEADER", action = act.ActivatePaneDirection("Up") },
     { key = "j", mods = "LEADER", action = act.ActivatePaneDirection("Down") },
+    -- Pane順回転 leader + Ctrl+h/l
+    -- Ctrl+H は OS レベルで Backspace (0x08) に変換されるため Backspace で受ける
+    { key = "Backspace", mods = "LEADER|CTRL", action = act.RotatePanes("CounterClockwise") },
+    { key = "Backspace", mods = "LEADER", action = act.RotatePanes("CounterClockwise") },
+    { key = "l", mods = "LEADER|CTRL", action = act.RotatePanes("Clockwise") },
     -- Pane選択
     { key = "[", mods = "CTRL|SHIFT", action = act.PaneSelect },
     -- 選択中のPaneのみ表示
