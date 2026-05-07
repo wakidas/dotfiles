@@ -210,14 +210,21 @@ return {
       -- タブの名前変更
       key = ",",
       mods = "LEADER",
-      action = act.PromptInputLine({
-        description = "(wezterm) Set tab title:",
-        action = wezterm.action_callback(function(window, pane, line)
-          if line then
-            window:active_tab():set_title(line)
-          end
-        end),
-      }),
+      action = wezterm.action_callback(function(window, pane)
+        local tab = window:active_tab()
+        window:perform_action(
+          act.PromptInputLine({
+            description = "(wezterm) Set tab title:",
+            initial_value = tab:get_title(),
+            action = wezterm.action_callback(function(_, _, line)
+              if line then
+                tab:set_title(line)
+              end
+            end),
+          }),
+          pane
+        )
+      end),
     },
     -- コマンドパレット表示
     { key = "p", mods = "SUPER", action = act.ActivateCommandPalette },
