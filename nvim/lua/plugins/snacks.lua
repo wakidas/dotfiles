@@ -57,8 +57,8 @@ return {
           },
         },
         sources = {
-          files = { hidden = true, ignored = true, exclude = exclude, args = { "--glob", "!node_modules/**", "--follow" } },
-          grep = { hidden = true, ignored = true, exclude = exclude, args = { "--glob", "!node_modules/**", "--follow" } },
+          files = { hidden = true, ignored = true, follow = true, exclude = vim.list_extend({ "node_modules" }, exclude) },
+          grep = { hidden = true, ignored = true, follow = true, exclude = vim.list_extend({ "node_modules" }, exclude) },
           explorer = { hidden = true, ignored = true, exclude = exclude },
         },
       },
@@ -88,11 +88,12 @@ return {
           filter = { cwd = true },
           hidden = true,
           ignored = true,
+          follow = true,
+          exclude = vim.list_extend({ "node_modules" }, exclude),
           transform = recent_transform,
           matcher = {
             sort_empty = false,
           },
-          args = { "--glob", "!node_modules/**", "--follow" },
         })
       end,
       desc = "最近のファイル",
