@@ -119,6 +119,9 @@ config.window_padding = {
 config.inactive_pane_hsb = {
   brightness = 0.2, -- 明るさを下げる
 }
+-- 非アクティブペインをクリックでアクティブ化する初回クリックは
+-- ペイン内のアプリに伝えない（Nvimのvisual mode誤爆防止）
+config.swallow_mouse_click_on_pane_focus = true
 ----------------------------------------------------
 -- Tab
 ----------------------------------------------------
