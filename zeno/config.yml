@@ -54,3 +54,7 @@ snippets:
   - name: project root
     keyword: proot
     snippet: cd $(git rev-parse --show-toplevel)
+
+  - name: lithium dev SSM tunnel to RDS
+    keyword: ssm-dev
+    snippet: aws ssm start-session --target i-01bdb78c43501cdd5 --document-name AWS-StartPortForwardingSessionToRemoteHost --parameters "{\"host\":[\"webstack-dbclusterencrypted52b768a5-4rb0b8clpq3r.cluster-creq6wqy6hbw.ap-northeast-1.rds.amazonaws.com\"],\"portNumber\":[\"5432\"],\"localPortNumber\":[\"15432\"]}" --profile lithium-dev --region ap-northeast-1
