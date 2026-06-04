@@ -268,8 +268,9 @@ return {
     -- Pane作成 leader + s or v (Vim style)
     { key = "s", mods = "LEADER", action = act.SplitVertical({ domain = "CurrentPaneDomain" }) },
     { key = "v", mods = "LEADER", action = act.SplitHorizontal({ domain = "CurrentPaneDomain" }) },
-    -- Paneを閉じる leader + x
+    -- Paneを閉じる leader + x or Ctrl+w
     { key = "x", mods = "LEADER", action = act({ CloseCurrentPane = { confirm = true } }) },
+    { key = "w", mods = "LEADER|CTRL", action = act({ CloseCurrentPane = { confirm = true } }) },
     -- Pane移動 leader + hlkj
     { key = "h", mods = "LEADER", action = act.ActivatePaneDirection("Left") },
     { key = "l", mods = "LEADER", action = act.ActivatePaneDirection("Right") },
