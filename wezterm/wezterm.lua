@@ -55,12 +55,18 @@ wezterm.on("user-var-changed", function(_, pane, name, value)
     return
   end
   local pid = tostring(pane:pane_id())
+  -- タブ名を優先し、未設定ならペインのタイトルにフォールバックする
+  local tab = pane:tab()
+  local tab_title = tab and tab:get_title() or ""
+  if tab_title == "" then
+    tab_title = pane:get_title() or ""
+  end
   if not wezterm.GLOBAL.agent_alerting[pid] then
     wezterm.GLOBAL.agent_alerting_count = wezterm.GLOBAL.agent_alerting_count + 1
     wezterm.background_child_process({
       AGENT_NOTIFIER_BIN,
       "-title", "WezTerm",
-      "-message", "Agent done: " .. (pane:get_title() or ""),
+      "-message", tab_title,
       "-sound", "Glass",
       "-activate", "com.github.wez.wezterm",
       "-group", "wezterm-agent-" .. pid,
@@ -319,36 +325,30 @@ table.insert(config.keys, {
         local state = resurrect.state_manager.load_state(id, "workspace")
         local target_ws = state.workspace or id
 
-        local current_mux_win = pane:window()
-        local reuse_current = (current_mux_win:get_workspace() == target_ws)
-
-        -- 累積防止: 復元先 workspace の既存ウィンドウを kill
-        -- （同 workspace への上書き復元時のみ、現ウィンドウは再利用するため除外）
+        -- 復元前に target_ws にあったウィンドウ群を控える。restore 後に kill する
+        -- （現アクション pane が含まれ得るため、復元前に kill すると action 実行中に消える）
+        local windows_to_kill = {}
         for _, mux_win in ipairs(wezterm.mux.all_windows()) do
-          if mux_win:get_workspace() == target_ws
-              and not (reuse_current and mux_win:window_id() == current_mux_win:window_id()) then
-            for _, mux_tab in ipairs(mux_win:tabs()) do
-              for _, tp in ipairs(mux_tab:panes()) do
-                wezterm.run_child_process({
-                  "/opt/homebrew/bin/wezterm", "cli", "kill-pane", "--pane-id", tostring(tp:pane_id()),
-                })
-              end
-            end
+          if mux_win:get_workspace() == target_ws then
+            table.insert(windows_to_kill, mux_win)
           end
         end
 
-        -- spawn される追加ウィンドウも target_ws に属させる
+        -- 全 window_state を新規 spawn で復元（close_open_tabs を使うと spawn と
+        -- 非同期 close が競合してタブが取りこぼされるため、現ウィンドウは再利用しない）
         opts.spawn_in_workspace = true
-        if reuse_current then
-          -- 同 workspace への上書き: 現ウィンドウを window[0] として再利用、既存タブ/ペインは閉じる
-          opts.window = current_mux_win
-          opts.close_open_tabs = true
-          opts.close_open_panes = true
-        end
         resurrect.workspace_state.restore_workspace(state, opts)
-
-        -- アクティブ workspace を target に切替（spawn or 再利用で必ず1ウィンドウ存在）
         wezterm.mux.set_active_workspace(target_ws)
+
+        for _, mux_win in ipairs(windows_to_kill) do
+          for _, mux_tab in ipairs(mux_win:tabs()) do
+            for _, tp in ipairs(mux_tab:panes()) do
+              wezterm.run_child_process({
+                "/opt/homebrew/bin/wezterm", "cli", "kill-pane", "--pane-id", tostring(tp:pane_id()),
+              })
+            end
+          end
+        end
       elseif type == "window" then
         local state = resurrect.state_manager.load_state(id, "window")
         resurrect.window_state.restore_window(pane:window(), state, opts)
