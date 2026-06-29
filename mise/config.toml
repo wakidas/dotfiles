@@ -17,6 +17,7 @@ trusted_config_paths = [
 ]
 
 [tools]
+aws-cli = { version = "latest", symlink_bins = "true" }
 node = "latest"
 ruby = "3.3.6"
 
