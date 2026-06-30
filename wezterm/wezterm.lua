@@ -172,21 +172,22 @@ local SOLID_LEFT_ARROW = wezterm.nerdfonts.ple_lower_right_triangle
 local SOLID_RIGHT_ARROW = wezterm.nerdfonts.ple_upper_left_triangle
 
 wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_width)
-  local background = "#5c6d74"
+  local INACTIVE_BG = "#5c6d74"
+  local ACTIVE_BG = "#ae8b2d"
+  local background = INACTIVE_BG
   local foreground = "#FFFFFF"
   local edge_background = "none"
   if tab.is_active then
-    background = "#ae8b2d"
+    background = ACTIVE_BG
     foreground = "#FFFFFF"
   end
 
   local alert = tab_alert(tab)
-  if alert.has_alert then
+  if alert.has_alert and not tab.is_active then
     background = alert.color
     foreground = "#FFFFFF"
   end
 
-  local edge_foreground = background
   -- カスタムタイトルがあれば優先、なければプロセス名を表示
   local tab_title = tab.tab_title
   if not tab_title or #tab_title == 0 then
@@ -194,6 +195,31 @@ wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_wid
   end
   local index = tab.tab_index + 1
   local title = "   " .. alert.badge .. "[" .. index .. "] " .. wezterm.truncate_right(tab_title, max_width - 1) .. "   "
+
+  -- アクティブかつアラートあり: 左半分=アラート色、右半分=アクティブ色の2トーン
+  if tab.is_active and alert.has_alert then
+    local left_bg = alert.color
+    local right_bg = ACTIVE_BG
+    local mid = math.floor(#title / 2)
+    local left_text = title:sub(1, mid)
+    local right_text = title:sub(mid + 1)
+    return {
+      { Background = { Color = edge_background } },
+      { Foreground = { Color = left_bg } },
+      { Text = SOLID_LEFT_ARROW },
+      { Background = { Color = left_bg } },
+      { Foreground = { Color = foreground } },
+      { Text = left_text },
+      { Background = { Color = right_bg } },
+      { Foreground = { Color = foreground } },
+      { Text = right_text },
+      { Background = { Color = edge_background } },
+      { Foreground = { Color = right_bg } },
+      { Text = SOLID_RIGHT_ARROW },
+    }
+  end
+
+  local edge_foreground = background
   return {
     { Background = { Color = edge_background } },
     { Foreground = { Color = edge_foreground } },
