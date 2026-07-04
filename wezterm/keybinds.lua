@@ -231,6 +231,9 @@ return {
     -- Tab移動
     { key = "Tab", mods = "CTRL", action = act.ActivateTabRelative(1) },
     { key = "Tab", mods = "SHIFT|CTRL", action = act.ActivateTabRelative(-1) },
+    -- Claude Code: Ctrl+] を Kitty/CSI-u (ESC [ 93 ; 5 u) で強制送出
+    -- レガシー制御バイト 0x1D だと ctrl+] として認識されないための回避策 → modelPicker
+    { key = "]", mods = "CTRL", action = act.SendString("\x1b[93;5u") },
     -- Tab入れ替え
     { key = "{", mods = "LEADER", action = act({ MoveTabRelative = -1 }) },
     -- 番号を指定してTabを移動
