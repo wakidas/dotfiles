@@ -55,6 +55,14 @@ snippets:
     keyword: proot
     snippet: cd $(git rev-parse --show-toplevel)
 
+  - name: neon start service
+    keyword: neon-server
+    snippet: cd $(git rev-parse --show-toplevel)/service && make start
+
+  - name: neon npm ci
+    keyword: neon-npm
+    snippet: cd $(git rev-parse --show-toplevel)/service/tenant-web && npm ci
+
   - name: lithium dev SSM tunnel to RDS
     keyword: ssm-dev
     snippet: INSTANCE_ID=$(aws ec2 describe-instances --profile lithium-dev --region ap-northeast-1 --filters "Name=tag:Name,Values=WebStack/BastionHost" "Name=instance-state-name,Values=running" --query "Reservations[].Instances[].InstanceId" --output text) && aws ssm start-session --target "$INSTANCE_ID" --document-name AWS-StartPortForwardingSessionToRemoteHost --parameters "{\"host\":[\"webstack-dbclusterencrypted52b768a5-4rb0b8clpq3r.cluster-creq6wqy6hbw.ap-northeast-1.rds.amazonaws.com\"],\"portNumber\":[\"5432\"],\"localPortNumber\":[\"15432\"]}" --profile lithium-dev --region ap-northeast-1
