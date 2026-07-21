@@ -102,6 +102,10 @@ local function tab_alert(tab)
 end
 
 config.automatically_reload_config = true
+config.font = wezterm.font_with_fallback({
+  "HackGen35 Console NF",
+  "Symbols Nerd Font Mono",
+})
 config.font_size = 12.0
 -- ペイン分割時のサイズ計算を改善
 config.adjust_window_size_when_changing_font_size = false
