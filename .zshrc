@@ -25,6 +25,9 @@ export HISTSIZE=10000
 export SAVEHIST=10000
 setopt share_history
 
+# `!` の履歴展開（!4 など）を無効化
+setopt no_bang_hist
+
 # 出力後1行空白追加
 add_newline() {
   if [[ -z $PS1_NEWLINE_LOGIN ]]; then
