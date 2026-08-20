@@ -110,7 +110,9 @@ config.font_size = 12.0
 -- ペイン分割時のサイズ計算を改善
 config.adjust_window_size_when_changing_font_size = false
 config.use_ime = true
-config.macos_forward_to_ime_modifier_mask = 'SHIFT|CTRL'
+-- CTRL を含めると Ctrl+b 等が IME（Emacs風カーソル移動）に吸われ、
+-- ターミナル内の多重化ツール（herdr の prefix=Ctrl+b）に届かなくなるため既定値のまま
+config.macos_forward_to_ime_modifier_mask = 'SHIFT|ALT'
 config.window_background_opacity = 0.85
 config.macos_window_background_blur = 20
 
@@ -315,7 +317,7 @@ end)
 config.disable_default_key_bindings = true
 config.keys = require("keybinds").keys
 config.key_tables = require("keybinds").key_tables
-config.leader = { key = "q", mods = "CTRL", timeout_milliseconds = 2000 }
+config.leader = { key = "b", mods = "CTRL", timeout_milliseconds = 2000 }
 
 ----------------------------------------------------
 -- resurrect (セッション保存・復元)
