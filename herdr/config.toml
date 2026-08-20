@@ -1,0 +1,25 @@
+onboarding = false
+[ui]
+agent_panel_sort = "spaces"
+
+show_agent_labels_on_pane_borders = false
+[session]
+# サーバ再起動後もサイドバーの agent を復元し、元の会話セッションに resume する
+resume_agents_on_restore = true
+
+[experimental]
+pane_history = false
+
+[theme]
+name = "nord"
+auto_switch = false
+
+[keys]
+# wezterm の leader が ctrl+b なので衝突を避けて ctrl+q にする
+prefix = "ctrl+q"
+# 下方向の分割を prefix+s に（既定は prefix+minus）
+split_horizontal = "prefix+s"
+# prefix+s を明け渡すため settings を退避（既定は prefix+s）
+settings = "prefix+shift+s"
+# tab名変更（既定は prefix+shift+t）
+rename_tab = "prefix+,"
