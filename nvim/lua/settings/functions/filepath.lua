@@ -26,6 +26,13 @@ function M.copy_full_path()
 	vim.notify("コピーしました: " .. path, vim.log.levels.INFO)
 end
 
+---ファイルの絶対パスをクリップボードにコピー
+function M.copy_absolute_path()
+	local path = vim.fn.expand("%:p"):gsub("^%w+://", "")
+	vim.fn.setreg("+", path)
+	vim.notify("コピーしました: " .. path, vim.log.levels.INFO)
+end
+
 ---ファイルのgit root相対パス:行数をクリップボードにコピー（visual modeでは範囲形式 L100-105）
 function M.copy_path_with_line()
 	local path = get_git_relative_path()

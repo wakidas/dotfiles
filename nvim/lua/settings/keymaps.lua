@@ -81,8 +81,9 @@ local diary = require("settings.functions.diary")
 --== カスタム関数 ===============================================
 
 -- ファイルパスキーマップ
-vim.keymap.set("n", "<leader>c", filepath.copy_full_path, { desc = "ファイルのフルパスをクリップボードにコピー" })
+vim.keymap.set("n", "<leader>c", filepath.copy_full_path, { desc = "ファイルのgit root相対パスをクリップボードにコピー" })
 vim.keymap.set({ "n", "v" }, "<leader>C", filepath.copy_path_with_line, { desc = "ファイルパス:行数をクリップボードにコピー" })
+vim.keymap.set("n", "<leader>A", filepath.copy_absolute_path, { desc = "ファイルの絶対パスをクリップボードにコピー" })
 
 -- GitHub連携キーマップ
 vim.keymap.set({ "n", "v" }, "<leader>gh", github.copy_github_url, { desc = "GitHub URLをクリップボードにコピー" })

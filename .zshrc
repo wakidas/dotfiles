@@ -56,7 +56,7 @@ autoload -Uz _zinit
 zinit light zsh-users/zsh-autosuggestions
 
 # fzf キーバインド・補完（即時読み込み）
-export FZF_CTRL_R_OPTS='--reverse'
+export FZF_CTRL_R_OPTS='--reverse --wrap'
 zinit snippet https://raw.githubusercontent.com/junegunn/fzf/master/shell/key-bindings.zsh
 zinit snippet https://raw.githubusercontent.com/junegunn/fzf/master/shell/completion.zsh
 
